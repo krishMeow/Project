@@ -1,0 +1,195 @@
+import {
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody,
+  } from "@mui/material";
+  import TipsAndUpdatesIcon from "@mui/icons-material/TipsAndUpdates";
+  import azure from "../../../assets/Microsoft_Azure.svg";
+  import type { PricingData } from "./form.state";
+import CommonSelectField from "../../common/commonSelectField";
+import CommonTextField from "../../common/commonTextField";
+import { 
+  virtualMachineData, 
+} from "./form.state";
+import { useMemo, useState } from "react";
+import CommonButton from "../../common/Button";
+  
+  
+  const VirtualMachineTable = () => {
+
+    const [filters, setFilters] = useState({
+      provider: "",
+      vcpuMin: "",
+      vcpuMax: "",
+      memoryMin: "",
+      memoryMax: "",
+    });
+  
+    // Provider options
+    const providerOptions = [
+      { value: "", label: "All Providers" },
+      { value: "AWS", label: "AWS" },
+      { value: "Azure", label: "Azure" },
+      { value: "Google Cloud", label: "Google Cloud" },
+      { value: "DigitalOcean", label: "DigitalOcean" },
+      { value: "Linode", label: "Linode" },
+    ];
+  
+    // Filter function
+    const filterData = (virtualMachineData: PricingData[]) => {
+      return virtualMachineData.filter((item) => {
+        // Provider filter
+        if (filters.provider && item.provider !== filters.provider) {
+          return false;
+        }
+  
+        // vCPU filter (extract vCPU from specs)
+        const vcpuMatch = item.specs.match(/(\d+)\s*vCPU/i);
+        if (vcpuMatch) {
+          const vcpu = parseInt(vcpuMatch[1]);
+          if (filters.vcpuMin && vcpu < parseInt(filters.vcpuMin)) {
+            return false;
+          }
+          if (filters.vcpuMax && vcpu > parseInt(filters.vcpuMax)) {
+            return false;
+          }
+        }
+  
+        // Memory filter (extract memory from specs)
+        const memoryMatch = item.specs.match(/(\d+)GB/i);
+        if (memoryMatch) {
+          const memory = parseInt(memoryMatch[1]);
+          if (filters.memoryMin && memory < parseInt(filters.memoryMin)) {
+            return false;
+          }
+          if (filters.memoryMax && memory > parseInt(filters.memoryMax)) {
+            return false;
+          }
+        }
+  
+        return true;
+      });
+    };
+
+    const filteredVirtualMachineData = useMemo(() => filterData(virtualMachineData), [filters]);
+
+    const clearFilters = () => {
+      setFilters({
+        provider: "",
+        vcpuMin: "",
+        vcpuMax: "",
+        memoryMin: "",
+        memoryMax: "",
+      });
+    };
+
+    return (
+      <div className="bg-white rounded-[1rem] p-[1rem]">
+       <div className="flex items-center justify-between gap-[5rem] text-[black] pl-[1rem] mb-[1rem]">
+        <div>
+          <p className="text-[1.5rem] font-semibold">Virtual Machines</p>
+        </div>
+        <div className=" border border-green-100 bg-green-100 rounded-[1rem] px-[1rem] py-[0.2rem] text-[13px] font-semibold">
+          <p className="flex gap-[5px] text-[#23785a]">
+            <TipsAndUpdatesIcon className="!w-[15px] !h-[20px]" /> AI Best Fit:
+            Hetzner (Best performance-to-cost ratio for VMs.)
+          </p>
+        </div>
+      </div>
+
+      <div className="col-span-10">
+        <div className="bg-white rounded-[1rem] p-[1rem]">
+          {/* <h2 className="text-black text-[1.5rem] font-semibold mb-4">Filters</h2> */}
+          
+          {/* Filter Controls */}
+          <div className="flex flex-wrap gap-4 items-end">
+            <CommonSelectField
+              label="Provider"
+              value={filters.provider}
+              onChange={(value) => setFilters(prev => ({ ...prev, provider: value }))}
+              options={providerOptions}
+              placeholder="Select Provider"
+            />
+            
+            <CommonTextField
+              label="vCPUs (Min)"
+              value={filters.vcpuMin}
+              onChange={(value) => setFilters(prev => ({ ...prev, vcpuMin: value }))}
+              type="number"
+              placeholder="Min vCPUs"
+            />
+            
+            <CommonTextField
+              label="vCPUs (Max)"
+              value={filters.vcpuMax}
+              onChange={(value) => setFilters(prev => ({ ...prev, vcpuMax: value }))}
+              type="number"
+              placeholder="Max vCPUs"
+            />
+            
+            <CommonTextField
+              label="Memory (Min GB)"
+              value={filters.memoryMin}
+              onChange={(value) => setFilters(prev => ({ ...prev, memoryMin: value }))}
+              type="number"
+              placeholder="Min Memory"
+            />
+            
+            <CommonTextField
+              label="Memory (Max GB)"
+              value={filters.memoryMax}
+              onChange={(value) => setFilters(prev => ({ ...prev, memoryMax: value }))}
+              type="number"
+              placeholder="Max Memory"
+            />
+            
+            <CommonButton
+              variant="secondary"
+              size="md"
+              onClick={clearFilters}
+              className="h-[40px] px-4 border border-purple-500 text-purple-500 hover:bg-purple-500 hover:text-white"
+            >
+              CLEAR FILTERS
+            </CommonButton>
+          </div>
+        </div>
+        </div>
+
+      <Table className="mb-[1.5rem]">
+        <TableHead>
+          <TableRow >
+            <TableCell className="!font-bold !text-[#8c94a3]">Provider</TableCell>
+            <TableCell className="!font-bold !text-[#8c94a3]">Specs</TableCell>
+            <TableCell className="!font-bold !text-[#8c94a3]">Hourly</TableCell>
+            <TableCell className="!font-bold !text-[#8c94a3]">Monthly</TableCell>
+            <TableCell className="!font-bold !text-[#8c94a3]">Spot</TableCell>
+            <TableCell className="!font-bold !text-[#8c94a3]">SLA</TableCell>
+          </TableRow>
+        </TableHead>
+          <TableBody>
+            {filteredVirtualMachineData.map((row) => (
+            <TableRow key={row.provider}>
+              <TableCell>
+                {" "}
+                <div className="flex items-center gap-2">
+                  <img src={azure} alt="logo" className="w-3 h-3" />
+                  <span>{row.provider}</span>
+                </div>
+              </TableCell>
+              <TableCell>{row.specs}</TableCell>
+              <TableCell>{row.hourly}</TableCell>
+              <TableCell className="!font-bold">{row.monthly}</TableCell>
+              <TableCell>{row.spot}</TableCell>
+              <TableCell>{row.sla}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      </div>
+    );
+  };
+  
+  export default VirtualMachineTable;
+  
