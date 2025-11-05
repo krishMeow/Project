@@ -1,4 +1,3 @@
-import { useState } from "react";
 import CommonButton from "../../common/Button";
 import formState, { type ArchitectureState } from "./form.state";
 
@@ -7,11 +6,7 @@ type ArchitecturePageProps = {
 };
 
 export default function ArchitecturePage({ data = formState }: ArchitecturePageProps) {
-  const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
-  const handleNodeClick = (nodeId: string) => {
-    setSelectedNode(selectedNode === nodeId ? null : nodeId);
-  };
 
   const handleExportClick = (exportType: string) => {
     console.log(`Exporting as ${exportType}`);
