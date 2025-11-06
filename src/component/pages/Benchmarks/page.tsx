@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
 import { Trophy, Lightbulb, Check } from 'lucide-react';
 import { AWSIcon, AzureIcon, DigitalOceanIcon, GoogleCloudIcon, HetznerIcon, LinodeIcon } from '../../common/icon';
+import { useState } from 'react';
 
 const BenchmarksPage = () => {
   const [serviceType, setServiceType] = useState('Compute/VMs');
@@ -68,12 +68,6 @@ const BenchmarksPage = () => {
       iops: 'N/A',
       priceScore: '$0.0030'
     }
-  ];
-
-  const topPerformers = [
-    { provider: 'AWS', color: 'bg-orange-500' },
-    { provider: 'Google Cloud', color: 'bg-blue-500' },
-    { provider: 'Azure', color: 'bg-sky-500' }
   ];
 
   return (

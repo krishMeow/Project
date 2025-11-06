@@ -1,6 +1,6 @@
 import dollarIcon from "../../../assets/dollar-green.svg";
 import excalimatory from "../../../assets/exclaimatory.svg";
-import { AWSIcon, AzureIcon, GoogleCloudIcon, LinodeIcon, DigitalOceanIcon, HetznerIcon } from '../../common/icon'
+import { AWSIcon, AzureIcon, GoogleCloudIcon, LinodeIcon, DigitalOceanIcon } from '../../common/icon'
 
 export type DashboardMetric = {
   id: string;
